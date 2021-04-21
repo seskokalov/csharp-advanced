@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using RockPaperScissors.Methods;
 
 namespace RockPaperScissors.Methods
 {
@@ -16,21 +17,15 @@ namespace RockPaperScissors.Methods
             bool checkChocie = true;
             while (checkChocie)
             {
-                int playerScore = 0;
-                int computerScore = 0;
-                int tieScore = 0;
-                int gamesPlayed = 0;
-                string playerName = "";
-
                 Console.WriteLine("Choose an option:\n[1] - Play\n[2] - Stats\n[3] - Exit");
                 checkChocie = int.TryParse(Console.ReadLine(), out int choice);
                 switch (choice)
                 {
                     case 1:
-                        Play(playerScore, computerScore, tieScore, gamesPlayed, playerName);
+                        Play();
                         break;
                     case 2:
-                        Stats(playerScore, computerScore, tieScore, gamesPlayed);
+                        Stats();
                         break;
                     case 3:
                         Console.WriteLine("Thanks for playing. Press enter to exit...");
@@ -45,14 +40,14 @@ namespace RockPaperScissors.Methods
             }
         }
 
-        public static void Play(int playerScore, int computerScore, int tieScore, int gamesPlayed, string playerName)
+        public static void Play()
         {
 
             bool player = true;
             while (player)
             {
                 Console.WriteLine("Enter your name:");
-                playerName = Console.ReadLine();
+                string playerName = Console.ReadLine();
                 if (playerName.Length < 2)
                 {
                     Console.WriteLine("Enter a valid name");
@@ -60,7 +55,9 @@ namespace RockPaperScissors.Methods
                 }
                 else
                 {
+                    Console.Clear();
                     Console.WriteLine($"Welcome {playerName}");
+                    ScoreTracker.ActivePlayer(playerName);
                     player = false;
                 }
             }
@@ -107,51 +104,60 @@ namespace RockPaperScissors.Methods
 
                 if (repeatGame == true)
                 {
-                    Console.WriteLine("Press enter to make your opponent choose:");
-                    Console.ReadLine();
+                    //Console.WriteLine("Press enter to make your opponent choose:");
+                    //Console.ReadLine();
                     Random randomChoice = new Random();
-                    int computerRandomChoice = randomChoice.Next(1, 3);
+                    int computerRandomChoice = randomChoice.Next(1, 4);
                     Choices computerWeapon = (Choices)computerRandomChoice;
                     Console.WriteLine($"Computer chose {computerWeapon}");
-                    gamesPlayed++;
+                    ScoreTracker.PlayedGames();
 
                     switch (playerWeapon, computerWeapon)
                     {
                         case (Choices.Rock, Choices.Rock):
                             Console.WriteLine("It's a tie!");
-                            tieScore++;
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.TiedGame();
                             break;
                         case (Choices.Paper, Choices.Paper):
                             Console.WriteLine("It's a tie!");
-                            tieScore++;
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.TiedGame();
                             break;
                         case (Choices.Scissors, Choices.Scissors):
                             Console.WriteLine("It's a tie!");
-                            tieScore++;
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.TiedGame();
                             break;
                         case (Choices.Rock, Choices.Paper):
                             Console.WriteLine($"Paper beats Rock, Computer wins!");
-                            computerScore++;
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.ComputerWon();
                             break;
                         case (Choices.Rock, Choices.Scissors):
-                            Console.WriteLine($"Rock beats Scissors, Player1");
-                            playerScore++;
+                            Console.WriteLine($"Rock beats Scissors, {ScoreTracker.PlayerName}");
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.PlayerWon();
                             break;
                         case (Choices.Paper, Choices.Rock):
-                            Console.WriteLine($"Paper beats Rock, Player1 wins!");
-                            playerScore++;
+                            Console.WriteLine($"Paper beats Rock, {ScoreTracker.PlayerName} wins!");
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.PlayerWon();
                             break;
                         case (Choices.Paper, Choices.Scissors):
                             Console.WriteLine($"Scissors beat Paper, Computer wins!");
-                            computerScore++;
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.ComputerWon();
                             break;
                         case (Choices.Scissors, Choices.Rock):
                             Console.WriteLine($"Rock beats Scissors, Computer wins");
-                            computerScore++;
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.ComputerWon();
                             break;
                         case (Choices.Scissors, Choices.Paper):
-                            Console.WriteLine($"Scissors beat Paper, Player1 wins!");
-                            playerScore++;
+                            Console.WriteLine($"Scissors beat Paper, {ScoreTracker.PlayerName} wins!");
+                            Console.WriteLine($"Games played: {ScoreTracker.GamesPlayed}");
+                            ScoreTracker.PlayerWon();
                             break;
                         default:
                             break;
@@ -160,18 +166,28 @@ namespace RockPaperScissors.Methods
             }            
         }
 
-        public static void Stats(int playerScore, int computerScore, int tieScore, int gamesPlayed)
-        {
-            Console.WriteLine($"Player1 has {playerScore} wins, Computer has {computerScore}");
-            Console.ReadLine();
-            //Console.WriteLine($"{playerName} has a {playerScore / gamesPlayed}% of wins, and a {computerScore / gamesPlayed}% losses");
+        public static void Stats()
+        {   
+            try
+            {
+                Console.WriteLine($" {ScoreTracker.PlayerName} has wins: {ScoreTracker.PlayerWins}, Computer has: {ScoreTracker.ComputerWins}, number of ties: {ScoreTracker.TieScore}");
+                Console.ReadLine();
+
+                double playerWins = (double)ScoreTracker.PlayerWins / ScoreTracker.GamesPlayed * 100;
+                Math.Round(playerWins, 2);
+                double playerLosses = (double)(ScoreTracker.GamesPlayed - ScoreTracker.PlayerWins - ScoreTracker.TieScore) / ScoreTracker.GamesPlayed * 100;
+                Math.Round(playerLosses, 2);
+
+                Console.WriteLine($"{ScoreTracker.PlayerName} has a {playerWins}% of wins, and a {playerLosses}% losses");
+
+                Console.WriteLine("Press enter to go back to main menu...");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
+  
 
-        
-
-        //public static int GetScores()
-        //{
-
-        //}
     }
 }
