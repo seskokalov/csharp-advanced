@@ -31,11 +31,18 @@ namespace QuizzApp
             #endregion
             #endregion
 
-            Console.WriteLine("Quizz time!");
-            Console.WriteLine("Provide your credentials below:");
-            Console.WriteLine("--------------------------------");
-            QuizzAppServices.AppServices.MainMenu(teachers, students);
-
+            try
+            {
+                Console.WriteLine("Quizz time!");
+                Console.WriteLine("Provide your credentials below:");
+                Console.WriteLine("--------------------------------");
+                QuizzAppServices.AppServices.MainMenu(teachers, students);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
             Console.ReadLine();
         }
     }

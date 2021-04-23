@@ -1,4 +1,5 @@
 ﻿using QuizzAppLibrary.Entities.Models;
+using QuizzAppLibrary.Entities.Enums;
 using QuizzAppServices;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ namespace QuizzAppServices
             int loginAttempts = 0;
             bool loginCheck = true;
             while (loginCheck)
-            {                
+            {
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Enter your username:");
                 string username = Console.ReadLine();
                 Console.WriteLine("Enter your password:");
@@ -37,21 +39,30 @@ namespace QuizzAppServices
                             Console.ForegroundColor = ConsoleColor.Black;
                             loginAttempts = 0;
                             Console.WriteLine($"Welcome {teacher.FirstName} {teacher.LastName}");
-                            
+                            Database.activeSessionTeacher(teacher);
                             Console.ReadLine();
+                            TeacherService.CheckQuiz(teachers, students);
                         }
                     }
                     foreach (Student student in students)
                     {
                         if (student.Username == username && student.Password == password)
                         {
-                            Console.BackgroundColor = ConsoleColor.DarkGreen;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            loginAttempts = 0;
-                            Console.WriteLine($"Welcome {student.FirstName} {student.LastName}");
-                            activeSessionStudent(student);
-                            Console.ReadLine();
-                            StudentService.QuizTime();
+                            if (student.TestGrade != Grades.NoGrade)
+                            {
+                                Console.WriteLine("Already did the test, nice try :)");
+                                Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.BackgroundColor = ConsoleColor.DarkGreen;
+                                Console.ForegroundColor = ConsoleColor.Black;
+                                loginAttempts = 0;
+                                Console.WriteLine($"Welcome {student.FirstName} {student.LastName}");
+                                Database.activeSessionStudent(student);
+                                Console.ReadLine();
+                                StudentService.QuizTime();
+                            }
                         }
                     }
                     if (loginAttempts == 1)
